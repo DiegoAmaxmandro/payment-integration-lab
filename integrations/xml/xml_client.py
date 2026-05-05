@@ -18,66 +18,81 @@ def generate_timestamp():
     return datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
 
-def generate_hash(timestamp, merchant_id, order_id, amount, currency, secret):
+def generate_hash(timestamp, merchant_id, order_id, amount, currency, card_number, secret):
 
-    # First hash
-    data = timestamp + merchant_id + order_id + amount + currency
-    hash1 = hashlib.sha1(data.encode()).hexdigest()
+    # Step 1 — build string with dots (as per docs)
+    data = ".".join([
+        timestamp,
+        merchant_id,
+        order_id,
+        amount,
+        currency,
+        card_number
+    ])
+    # # debug
+    # print("\nHASH STRING:")
+    # print(data)
 
-    # Final hash
+    # Step 2 — first hash
+    hash1 = hashlib.sha1(data.encode("utf-8")).hexdigest()
+
+    # Step 3 — final hash
     final_hash = hashlib.sha1(
-        (hash1 + secret).encode()
+        (hash1 + "." + secret).encode("utf-8")
     ).hexdigest()
-
+    
+    # # debug
+    # print("\nHASH VALUE:")
+    # print(final_hash)
+    
     return final_hash
+
 
 
 def build_xml():
 
     creds = load_credentials()
+    
+    # # debug
+    # print("\nDEBUG CREDS:")
+    # print(creds)
+    # print("Merchant ID:", creds.get("merchant_id"))
+    # print("Account ID:", creds.get("account_id"))
 
     timestamp = generate_timestamp()
-
-    order_id = "ORDER123"
-
-    amount = "55000"  # 100 = €1.00
+    order_id = "ORDER129"
+    amount = "58000"  # 100 = €1.00
     currency = "EUR"
+    card_number = "4263970000005262"
 
     hash_value = generate_hash(
-        timestamp,
-        creds["merchant_id"],
-        order_id,
-        amount,
-        currency,
-        creds["secret"]
-    )
+    timestamp,
+    creds["merchant_id"],
+    order_id,
+    amount,
+    currency,
+    card_number,
+    creds["secret"]
+)
 
-    xml = f"""
-<request type="auth">
-    <merchantid>{creds["merchant_id"]}</merchantid>
-    <account>{creds["account_id"]}</account>
-
-    <orderid>{order_id}</orderid>
-
-    <amount currency="{currency}">{amount}</amount>
-
-    <timestamp>{timestamp}</timestamp>
-
-    <card>
-        <number>4111111111111111</number>
-        <expdate>1225</expdate>
-        <chname>Test User</chname>
-        <cvn>
-            <number>123</number>
-            <presind>1</presind>
-        </cvn>
-    </card>
-
-    <autosettle flag="0"/>
-
-    <sha1hash>{hash_value}</sha1hash>
-</request>
-"""
+    xml = f""" <request type="auth" timestamp="{timestamp}">
+        <merchantid>{creds["merchant_id"]}</merchantid>
+        <account>{creds["account_id"]}</account>
+        <orderid>{order_id}</orderid>
+        <amount currency="{currency}">{amount}</amount>
+        <card>
+            <number>4263970000005262</number>
+            <expdate>1230</expdate>
+            <chname>Test User</chname>
+            <type>VISA</type>
+            <cvn>
+                <number>125</number>
+                <presind>1</presind>
+            </cvn>
+        </card>
+        <autosettle flag="0"/>
+        <sha1hash>{hash_value}</sha1hash>
+    </request>"""
 
     return xml
 
