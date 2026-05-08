@@ -12,6 +12,7 @@ sys.path.append(
 )
 
 from merchant_system.config_loader import load_credentials
+from integrations.xml.scenarios import SCENARIOS
 
 
 def generate_timestamp():
@@ -60,10 +61,25 @@ def build_xml():
     # print("Account ID:", creds.get("account_id"))
 
     timestamp = generate_timestamp()
-    order_id = "ORDER129"
-    amount = "58000"  # 100 = €1.00
-    currency = "EUR"
-    card_number = "4263970000005262"
+
+    # Scenario selection
+    if len(sys.argv) > 1:
+        scenario_name = sys.argv[1]
+    else:
+        scenario_name = "success"
+
+    scenario = SCENARIOS.get(scenario_name)
+
+    if not scenario:
+        raise ValueError(f"Scenario '{scenario_name}' not found")
+
+    print(f"\nRunning scenario: {scenario_name}")
+
+    # Load values from scenario
+    order_id = scenario["order_id"]
+    amount = scenario["amount"]
+    currency = scenario["currency"]
+    card_number = scenario["card_number"]
 
     hash_value = generate_hash(
     timestamp,
@@ -75,22 +91,22 @@ def build_xml():
     creds["secret"]
 )
 
-    xml = f""" <request type="auth" timestamp="{timestamp}">
+    xml = f"""<request type="auth" timestamp="{timestamp}">
         <merchantid>{creds["merchant_id"]}</merchantid>
         <account>{creds["account_id"]}</account>
         <orderid>{order_id}</orderid>
         <amount currency="{currency}">{amount}</amount>
         <card>
-            <number>4263970000005262</number>
-            <expdate>1230</expdate>
-            <chname>Test User</chname>
-            <type>VISA</type>
+            <number>{card_number}</number>
+            <expdate>{scenario["expdate"]}</expdate>
+            <chname>Luffy</chname>
+            <type>{scenario["card_type"]}</type>
             <cvn>
-                <number>125</number>
+                <number>{scenario["cvn"]}</number>
                 <presind>1</presind>
             </cvn>
         </card>
-        <autosettle flag="0"/>
+        <autosettle flag="1"/>
         <sha1hash>{hash_value}</sha1hash>
     </request>"""
 
@@ -118,7 +134,6 @@ def send_request():
     )
 
     print("\nStatus Code:", response.status_code)
-
     print("\nGateway Response:\n")
     print(response.text)
 
