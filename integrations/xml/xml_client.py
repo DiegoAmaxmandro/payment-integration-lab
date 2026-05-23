@@ -3,6 +3,7 @@ import hashlib
 import datetime
 import os
 import sys
+import time
 
 # Allow importing config loader
 sys.path.append(
@@ -76,7 +77,7 @@ def build_xml():
     print(f"\nRunning scenario: {scenario_name}")
 
     # Load values from scenario
-    order_id = scenario["order_id"]
+    order_id = f"{scenario['order_id']}_{int(time.time())}"
     amount = scenario["amount"]
     currency = scenario["currency"]
     card_number = scenario["card_number"]
@@ -89,7 +90,10 @@ def build_xml():
     currency,
     card_number,
     creds["secret"]
+    
 )
+    if scenario.get("force_bad_hash"):
+        hash_value = 0000000000000000000000000000000000000000
 
     xml = f"""<request type="auth" timestamp="{timestamp}">
         <merchantid>{creds["merchant_id"]}</merchantid>

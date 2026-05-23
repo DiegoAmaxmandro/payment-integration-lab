@@ -1,6 +1,6 @@
 SCENARIOS = {
     "success" : {
-        "order_id" : "ORDER136",
+        "order_id" : "ORDER",
         "amount" : "33000",
         "currency" : "EUR",
         "card_number" : "4263970000005262",
@@ -10,12 +10,23 @@ SCENARIOS = {
     },
     
     "wrong_cvn": {
-    "order_id": "ORDER135",
+    "order_id": "ORDER",
     "amount": "39000",
     "currency": "EUR",
     "card_number": "4263970000005262",
     "expdate": "1230",
     "cvn": "9999",   # wrong CVN
     "card_type": "VISA"
+},
+    
+    "invalid_hash": {
+    "order_id": "ORDER",
+    "amount": "33000",
+    "currency": "EUR",
+    "card_number": "4263970000005262",
+    "expdate": "1230",
+    "cvn": "125",
+    "card_type": "VISA",
+    "force_bad_hash": True
 }
 }
