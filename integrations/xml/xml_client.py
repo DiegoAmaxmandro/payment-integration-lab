@@ -87,10 +87,10 @@ def build_xml(scenario_name):
         <orderid>{order_id}</orderid>
         <amount currency="{currency}">{amount}</amount>
         <card>
-            {card_type_xml}
+            <number>{card_number}</number>
             <expdate>{scenario["expdate"]}</expdate>
             <chname>Luffy</chname>
-            <type>{scenario["card_type"]}</type>
+            {card_type_xml}
             <cvn>
                 <number>{scenario["cvn"]}</number>
                 <presind>1</presind>
@@ -124,16 +124,29 @@ def send_request(scenario_name="success"):
     root = ET.fromstring(response.text)
     actual_result = root.findtext("result")
     expected_result = scenario.get("expected_result")
+    actual_message = root.findtext("message")
+    expected_message_contains = scenario.get("expected_message_contains")
+    
     print("\nValidation:")
     print("Expected:", expected_result)
     print("Actual:", actual_result)
 
-    if actual_result == expected_result:
+    result_matches = actual_result == expected_result
+
+    if expected_message_contains:
+        message_matches = expected_message_contains in (actual_message or "")
+    else:
+        message_matches = True
+
+    if result_matches and message_matches:
         status = "PASSED"
     else:
         status = "FAILED"
 
     print("Scenario status:", status)
+    if expected_message_contains:
+        print("Expected message contains:", expected_message_contains)
+        print("Actual message:", actual_message)
 
     log_result(
         scenario_name,

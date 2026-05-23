@@ -30,7 +30,8 @@ SCENARIOS = {
     "cvn": "125",
     "card_type": "VISA",
     "force_bad_hash": True,
-    "expected_result": "505"
+    "expected_result": "505",
+    "expected_message_contains": "sha1hash incorrect"
 },
     "duplicate_order": {
     "order_id": "DUPLICATE_ORDER_TEST",
@@ -52,6 +53,7 @@ SCENARIOS = {
     "cvn": "125",
     "card_type": "VISA",
     "expected_result": "502",
+    "expected_message_contains": "Mandatory Fields missing",
     "omit_card_type": True
 }
 }
