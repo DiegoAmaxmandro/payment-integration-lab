@@ -6,7 +6,8 @@ SCENARIOS = {
         "card_number" : "4263970000005262",
         "expdate" : "1230",
         "cvn" : "125",
-        "card_type" : "VISA"
+        "card_type" : "VISA",
+        "expected_result": "00"
     },
     
     "wrong_cvn": {
@@ -16,7 +17,8 @@ SCENARIOS = {
     "card_number": "4263970000005262",
     "expdate": "1230",
     "cvn": "9999",   # wrong CVN
-    "card_type": "VISA"
+    "card_type": "VISA",
+    "expected_result": "509"
 },
     
     "invalid_hash": {
@@ -27,6 +29,7 @@ SCENARIOS = {
     "expdate": "1230",
     "cvn": "125",
     "card_type": "VISA",
-    "force_bad_hash": True
+    "force_bad_hash": True,
+    "expected_result": "505"
 }
 }

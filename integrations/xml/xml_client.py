@@ -4,6 +4,7 @@ import datetime
 import os
 import sys
 import time
+import xml.etree.ElementTree as ET
 
 # Allow importing config loader
 sys.path.append(
@@ -114,7 +115,7 @@ def build_xml():
         <sha1hash>{hash_value}</sha1hash>
     </request>"""
 
-    return xml
+    return xml, scenario
 
 
 def send_request():
@@ -123,7 +124,7 @@ def send_request():
 
     url = creds["endpoint"]
 
-    xml_payload = build_xml()
+    xml_payload, scenario = build_xml()
 
     print("\nSending request to:")
     print(url)
@@ -140,6 +141,17 @@ def send_request():
     print("\nStatus Code:", response.status_code)
     print("\nGateway Response:\n")
     print(response.text)
+    root = ET.fromstring(response.text)
+    actual_result = root.findtext("result")
+    expected_result = scenario.get("expected_result")
+    print("\nValidation:")
+    print("Expected:", expected_result)
+    print("Actual:", actual_result)
+
+    if actual_result == expected_result:
+        print("Scenario status: PASSED")
+    else:
+        print("Scenario status: FAILED")
 
 
 if __name__ == "__main__":
