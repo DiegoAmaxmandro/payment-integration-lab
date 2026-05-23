@@ -6,14 +6,12 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 
-
 # Allow importing config loader
 sys.path.append(
     os.path.abspath(
         os.path.join(os.path.dirname(__file__), "../../")
     )
 )
-
 from merchant_system.config_loader import load_credentials
 from integrations.xml.scenarios import SCENARIOS
 from integrations.xml.logger import log_result
@@ -34,10 +32,7 @@ def generate_hash(timestamp, merchant_id, order_id, amount, currency, card_numbe
         currency,
         card_number
     ])
-    # # debug
-    # print("\nHASH STRING:")
-    # print(data)
-
+    
     # Step 2 — first hash
     hash1 = hashlib.sha1(data.encode("utf-8")).hexdigest()
 
@@ -46,26 +41,12 @@ def generate_hash(timestamp, merchant_id, order_id, amount, currency, card_numbe
         (hash1 + "." + secret).encode("utf-8")
     ).hexdigest()
     
-    # # debug
-    # print("\nHASH VALUE:")
-    # print(final_hash)
-    
     return final_hash
-
-
 
 def build_xml(scenario_name):
 
     creds = load_credentials()
-    
-    # # debug
-    # print("\nDEBUG CREDS:")
-    # print(creds)
-    # print("Merchant ID:", creds.get("merchant_id"))
-    # print("Account ID:", creds.get("account_id"))
-
     timestamp = generate_timestamp()
-
     scenario = SCENARIOS.get(scenario_name)
 
     if not scenario:
@@ -80,17 +61,16 @@ def build_xml(scenario_name):
     card_number = scenario["card_number"]
 
     hash_value = generate_hash(
-    timestamp,
-    creds["merchant_id"],
-    order_id,
-    amount,
-    currency,
-    card_number,
-    creds["secret"]
-    
+        timestamp,
+        creds["merchant_id"],
+        order_id,
+        amount,
+        currency,
+        card_number,
+        creds["secret"]
 )
     if scenario.get("force_bad_hash"):
-        hash_value = 0000000000000000000000000000000000000000
+        hash_value = "0000000000000000000000000000000000000000"
 
     xml = f"""<request type="auth" timestamp="{timestamp}">
         <merchantid>{creds["merchant_id"]}</merchantid>
@@ -113,15 +93,11 @@ def build_xml(scenario_name):
 
     return xml, scenario, scenario_name, order_id
 
-
 def send_request(scenario_name="success"):
 
     creds = load_credentials()
-
     url = creds["endpoint"]
-
     xml_payload, scenario, scenario_name, order_id = build_xml(scenario_name)
-
     print("\nSending request to:")
     print(url)
 
@@ -133,7 +109,6 @@ def send_request(scenario_name="success"):
         },
         timeout=30
     )
-
     print("\nStatus Code:", response.status_code)
     print("\nGateway Response:\n")
     print(response.text)
@@ -158,7 +133,6 @@ def send_request(scenario_name="success"):
         actual_result,
         status
     )
-
 
 if __name__ == "__main__":
 
