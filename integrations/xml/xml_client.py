@@ -6,6 +6,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 
+
 # Allow importing config loader
 sys.path.append(
     os.path.abspath(
@@ -15,6 +16,7 @@ sys.path.append(
 
 from merchant_system.config_loader import load_credentials
 from integrations.xml.scenarios import SCENARIOS
+from integrations.xml.logger import log_result
 
 
 def generate_timestamp():
@@ -115,7 +117,7 @@ def build_xml():
         <sha1hash>{hash_value}</sha1hash>
     </request>"""
 
-    return xml, scenario
+    return xml, scenario, scenario_name, order_id
 
 
 def send_request():
@@ -124,7 +126,7 @@ def send_request():
 
     url = creds["endpoint"]
 
-    xml_payload, scenario = build_xml()
+    xml_payload, scenario, scenario_name, order_id = build_xml()
 
     print("\nSending request to:")
     print(url)
@@ -149,9 +151,19 @@ def send_request():
     print("Actual:", actual_result)
 
     if actual_result == expected_result:
-        print("Scenario status: PASSED")
+        status = "PASSED"
     else:
-        print("Scenario status: FAILED")
+        status = "FAILED"
+
+    print("Scenario status:", status)
+
+    log_result(
+        scenario_name,
+        order_id,
+        expected_result,
+        actual_result,
+        status
+    )
 
 
 if __name__ == "__main__":
