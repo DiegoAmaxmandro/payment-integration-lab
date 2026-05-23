@@ -54,7 +54,7 @@ def generate_hash(timestamp, merchant_id, order_id, amount, currency, card_numbe
 
 
 
-def build_xml():
+def build_xml(scenario_name):
 
     creds = load_credentials()
     
@@ -65,12 +65,6 @@ def build_xml():
     # print("Account ID:", creds.get("account_id"))
 
     timestamp = generate_timestamp()
-
-    # Scenario selection
-    if len(sys.argv) > 1:
-        scenario_name = sys.argv[1]
-    else:
-        scenario_name = "success"
 
     scenario = SCENARIOS.get(scenario_name)
 
@@ -120,13 +114,13 @@ def build_xml():
     return xml, scenario, scenario_name, order_id
 
 
-def send_request():
+def send_request(scenario_name="success"):
 
     creds = load_credentials()
 
     url = creds["endpoint"]
 
-    xml_payload, scenario, scenario_name, order_id = build_xml()
+    xml_payload, scenario, scenario_name, order_id = build_xml(scenario_name)
 
     print("\nSending request to:")
     print(url)

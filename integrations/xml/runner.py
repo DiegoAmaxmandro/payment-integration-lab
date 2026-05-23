@@ -12,4 +12,10 @@ from integrations.xml.xml_client import send_request
 
 
 if __name__ == "__main__":
-    send_request()
+
+    if len(sys.argv) > 1:
+        scenario_name = sys.argv[1]
+    else:
+        scenario_name = "success"
+
+    send_request(scenario_name)
