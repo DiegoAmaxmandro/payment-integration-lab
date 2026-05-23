@@ -55,7 +55,12 @@ def build_xml(scenario_name):
     print(f"\nRunning scenario: {scenario_name}")
 
     # Load values from scenario
-    order_id = f"{scenario['order_id']}_{int(time.time())}"
+    
+    if scenario.get("use_static_order_id"):
+        order_id = scenario["order_id"]
+    else:
+        order_id = f"{scenario['order_id']}_{int(time.time())}"
+        
     amount = scenario["amount"]
     currency = scenario["currency"]
     card_number = scenario["card_number"]
