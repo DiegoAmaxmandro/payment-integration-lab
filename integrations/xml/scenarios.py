@@ -42,5 +42,16 @@ SCENARIOS = {
     "card_type": "VISA",
     "expected_result": "501",
     "use_static_order_id": True
+},
+    "missing_card_type": {
+    "order_id": "ORDER",
+    "amount": "33000",
+    "currency": "EUR",
+    "card_number": "4263970000005262",
+    "expdate": "1230",
+    "cvn": "125",
+    "card_type": "VISA",
+    "expected_result": "502",
+    "omit_card_type": True
 }
 }

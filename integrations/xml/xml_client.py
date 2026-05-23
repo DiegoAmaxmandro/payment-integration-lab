@@ -76,14 +76,18 @@ def build_xml(scenario_name):
 )
     if scenario.get("force_bad_hash"):
         hash_value = "0000000000000000000000000000000000000000"
-
+    if scenario.get("omit_card_type"):
+        card_type_xml = ""
+    else:
+        card_type_xml = f'<type>{scenario["card_type"]}</type>'
+        
     xml = f"""<request type="auth" timestamp="{timestamp}">
         <merchantid>{creds["merchant_id"]}</merchantid>
         <account>{creds["account_id"]}</account>
         <orderid>{order_id}</orderid>
         <amount currency="{currency}">{amount}</amount>
         <card>
-            <number>{card_number}</number>
+            {card_type_xml}
             <expdate>{scenario["expdate"]}</expdate>
             <chname>Luffy</chname>
             <type>{scenario["card_type"]}</type>
