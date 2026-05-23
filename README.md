@@ -15,11 +15,12 @@ This project includes a scenario-driven XML API testing flow for the Global Paym
 
 ### Current XML scenarios
 
-| Scenario       | Purpose                                               | Expected Result |
-| -------------- | ----------------------------------------------------- | --------------- |
-| `success`      | Sends a valid XML authorization request               | `00`            |
-| `wrong_cvn`    | Sends an invalid CVN format                           | `509`           |
-| `invalid_hash` | Sends a valid XML request with an incorrect SHA1 hash | `505`           |
+| Scenario          | Purpose                                                                                                        | Expected Result |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- | --------------- |
+| `success`         | Sends a valid XML authorization request                                                                        | `00`            |
+| `wrong_cvn`       | Sends an invalid CVN format                                                                                    | `509`           |
+| `invalid_hash`    | Sends a valid XML request with an incorrect SHA1 hash                                                          | `505`           |
+| `duplicate_order` | Reuses the same order ID to simulate duplicate transaction handling. Run twice to trigger the duplicate error. | `501`           |
 
 ### How to run
 
